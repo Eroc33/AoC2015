@@ -1,6 +1,6 @@
 use std::io::BufRead;
 
-use shared::bail;
+use shared::{bail, parameterized_tests};
 
 fn solution(input: impl BufRead) -> shared::Result<i64> {
     let mut floor = 0i64;
