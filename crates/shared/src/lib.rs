@@ -40,3 +40,16 @@ where
 {
     assert_eq!(solution(std::io::Cursor::new(input)).unwrap(), value)
 }
+
+#[macro_export]
+macro_rules! parameterized_tests {
+    ($($name:ident: $solution:ident($input:expr) == $value:expr,)*) => {
+    $(
+        #[cfg(test)]
+        #[test]
+        fn $name() {
+            shared::check_example($solution, $input, $value)
+        }
+    )*
+    }
+}

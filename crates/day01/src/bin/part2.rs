@@ -22,8 +22,7 @@ fn solution(input: impl BufRead) -> shared::Result<i64> {
 
 shared::main!(solution);
 
-#[cfg(test)]
-#[test]
-fn day01_part2_example() {
-    shared::check_example(solution, todo!(), todo!())
+parameterized_tests! {
+    day01_part2_example_a: solution(")") == 1,
+    day01_part2_example_b: solution("()())") == 5,
 }
