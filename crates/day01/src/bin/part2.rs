@@ -1,7 +1,23 @@
 use std::io::BufRead;
 
-fn solution(input: impl BufRead) -> shared::Result<u32> {
-    todo!()
+use shared::bail;
+
+fn solution(input: impl BufRead) -> shared::Result<i64> {
+    let mut floor = 0i64;
+    let mut pos = 1;
+    for byte in input.bytes() {
+        let byte = byte?;
+        match byte {
+            b'(' => floor += 1,
+            b')' => floor -= 1,
+            _ => {}
+        }
+        if floor == -1 {
+            return Ok(pos);
+        }
+        pos += 1;
+    }
+    bail!("Never reached basement")
 }
 
 shared::main!(solution);
