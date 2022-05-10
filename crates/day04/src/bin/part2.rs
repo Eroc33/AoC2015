@@ -1,7 +1,7 @@
 use std::io::BufRead;
 
 use md5::{Digest, Md5};
-use shared::{bail, parameterized_tests};
+use shared::{bail};
 
 fn solution(mut input: impl BufRead) -> shared::Result<u32> {
     let mut key = String::new();

@@ -1,4 +1,4 @@
-use std::{io::BufRead, collections::HashSet};
+use std::{io::BufRead};
 
 use shared::parameterized_tests;
 

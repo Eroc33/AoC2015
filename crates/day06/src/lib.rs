@@ -1,4 +1,4 @@
-use shared::{combine::{choice, parser::char::string, Parser, Stream, ParseError, RangeStreamOnce, StreamOnce, attempt}};
+use shared::{combine::{choice, parser::char::string, Parser, Stream, attempt}};
 use std::{ops::RangeInclusive};
 
 #[derive(Clone)]
@@ -30,10 +30,6 @@ pub struct Command{
 impl Command{
     pub fn parser<Input>() -> impl Parser<Input, Output = Command>
         where Input: Stream<Token = char>,
-        Input::Error: ParseError<Input::Token, Input::Range, Input::Position>,
-        Input::Range: shared::combine::stream::Range,
-        Input: RangeStreamOnce,
-        <<Input as StreamOnce>::Error as ParseError<Input::Token, Input::Range, Input::Position>>::StreamError: From<std::num::ParseIntError>,
     {
         (
             Action::parser(),
