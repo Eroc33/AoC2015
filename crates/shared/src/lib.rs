@@ -41,7 +41,11 @@ where
     F: FnOnce(std::io::Cursor<&'a str>) -> Result<T, Error>,
     T: PartialEq + Debug,
 {
-    assert_eq!(solution(std::io::Cursor::new(input)).unwrap(), value)
+    let val = match solution(std::io::Cursor::new(input)){
+        Ok(val) => val,
+        Err(e) => panic!("Err: {}", e),
+    };
+    assert_eq!(val, value)
 }
 
 #[macro_export]
