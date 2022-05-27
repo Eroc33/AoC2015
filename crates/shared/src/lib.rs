@@ -25,7 +25,11 @@ pub fn input() -> Result<impl BufRead> {
     let filename = match env::args().nth(1) {
         Some(v) => v,
         None => {
-            bail!("You must pass a filename as first argument");
+            if let Ok(pkg) = env::var("CARGO_PKG_NAME"){
+                format!("./inputs/{}.txt",pkg)
+            }else{
+                bail!("You must pass a filename as first argument");
+            }
         }
     };
     match fs::File::open(filename) {
