@@ -1,0 +1,11 @@
+[package]
+name = "day13"
+version = "0.1.0"
+authors = ["Euan <euan@rochester.me.uk>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+petgraph = "0.6.2"
+shared = {path="../shared"}

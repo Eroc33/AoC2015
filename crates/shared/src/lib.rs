@@ -32,10 +32,10 @@ pub fn input() -> Result<impl BufRead> {
             }
         }
     };
-    match fs::File::open(filename) {
+    match fs::File::open(&filename) {
         Ok(v) => Ok(BufReader::new(v)),
         Err(e) => {
-            bail!("Couldn't open input file due to io error: {:?}", e);
+            bail!("Couldn't open input file ({}) due to io error: {:?}", filename, e);
         }
     }
 }
