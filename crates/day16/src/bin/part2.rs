@@ -10,35 +10,7 @@ use shared::{
 };
 
 #[derive(Debug)]
-pub struct Analysis {
-    children: Option<usize>,
-    cats: Option<usize>,
-    samoyeds: Option<usize>,
-    pomeranians: Option<usize>,
-    akitas: Option<usize>,
-    vizslas: Option<usize>,
-    goldfish: Option<usize>,
-    trees: Option<usize>,
-    cars: Option<usize>,
-    perfumes: Option<usize>,
-}
-
-impl From<HashMap<String, usize>> for Analysis {
-    fn from(map: HashMap<String, usize>) -> Self {
-        Self {
-            children: map.get("children").copied(),
-            cats: map.get("cats").copied(),
-            samoyeds: map.get("samoyeds").copied(),
-            pomeranians: map.get("pomeranians").copied(),
-            akitas: map.get("akitas").copied(),
-            vizslas: map.get("vizslas").copied(),
-            goldfish: map.get("goldfish").copied(),
-            trees: map.get("trees").copied(),
-            cars: map.get("cars").copied(),
-            perfumes: map.get("perfumes").copied(),
-        }
-    }
-}
+pub struct Analysis(HashMap<String, usize>);
 
 pub fn parser<Input>() -> impl Parser<Input, Output = HashMap<usize, Analysis>>
 where
@@ -47,8 +19,7 @@ where
     sep_end_by1(
         (
             string("Sue ").with(usize()).skip(string(": ")),
-            sep_by1((many1(letter()).skip(string(": ")), usize()), string(", "))
-                .map(<Analysis as From<HashMap<String, usize>>>::from),
+            sep_by1((many1(letter()).skip(string(": ")), usize()), string(", ")).map(Analysis),
         ),
         shared::parse::lax_newline(),
     )
@@ -62,41 +33,39 @@ fn solution(mut input: impl BufRead) -> shared::Result<usize> {
         .map_err(|err| anyhow!(err.map_range(|s| s.to_string())))?;
     assert!(rest.input.len() == 0);
 
-    let target_info = Analysis {
-        children: Some(3),
-        cats: Some(7),
-        samoyeds: Some(2),
-        pomeranians: Some(3),
-        akitas: Some(0),
-        vizslas: Some(0),
-        goldfish: Some(5),
-        trees: Some(3),
-        cars: Some(2),
-        perfumes: Some(1),
-    };
+    let target_info = Analysis({
+        let mut map = HashMap::new();
+        map.insert("children".to_owned(), 3);
+        map.insert("cats".to_owned(), 7);
+        map.insert("samoyeds".to_owned(), 2);
+        map.insert("pomeranians".to_owned(), 3);
+        map.insert("akitas".to_owned(), 0);
+        map.insert("vizslas".to_owned(), 0);
+        map.insert("goldfish".to_owned(), 5);
+        map.insert("trees".to_owned(), 3);
+        map.insert("cars".to_owned(), 2);
+        map.insert("perfumes".to_owned(), 1);
+        map
+    });
 
     let candidates: Vec<_> = aunts
         .into_iter()
         .filter(|(_n, aunt)| {
             let mut mismatch = false;
-            let cmps: &[(
-                &Option<usize>,
-                &Option<usize>,
-                &dyn Fn(&usize, &usize) -> bool,
-            )] = &[
-                (&aunt.children, &target_info.children, &|a, b| a == b),
-                (&aunt.cats, &target_info.cats, &|a, b| a > b),
-                (&aunt.samoyeds, &target_info.samoyeds, &|a, b| a == b),
-                (&aunt.pomeranians, &target_info.pomeranians, &|a, b| a < b),
-                (&aunt.akitas, &target_info.akitas, &|a, b| a == b),
-                (&aunt.vizslas, &target_info.vizslas, &|a, b| a == b),
-                (&aunt.goldfish, &target_info.goldfish, &|a, b| a < b),
-                (&aunt.trees, &target_info.trees, &|a, b| a > b),
-                (&aunt.cars, &target_info.cars, &|a, b| a == b),
-                (&aunt.perfumes, &target_info.perfumes, &|a, b| a == b),
+            let cmps: &[(&str, &dyn Fn(&usize, &usize) -> bool)] = &[
+                ("children", &|a, b| a == b),
+                ("cats", &|a, b| a > b),
+                ("samoyeds", &|a, b| a == b),
+                ("pomeranians", &|a, b| a < b),
+                ("akitas", &|a, b| a == b),
+                ("vizslas", &|a, b| a == b),
+                ("goldfish", &|a, b| a < b),
+                ("trees", &|a, b| a > b),
+                ("cars", &|a, b| a == b),
+                ("perfumes", &|a, b| a == b),
             ];
-            for (a, b, cmp) in cmps {
-                if let (Some(a), Some(b)) = (a, b) {
+            for (key, cmp) in cmps {
+                if let (Some(a), Some(b)) = (aunt.0.get(*key), target_info.0.get(*key)) {
                     if !cmp(a, b) {
                         mismatch = true
                     }
