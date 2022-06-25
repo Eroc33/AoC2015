@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::BufRead};
+use std::{cmp::Ordering, collections::HashMap, io::BufRead};
 
 use shared::{
     anyhow,
@@ -52,21 +52,21 @@ fn solution(mut input: impl BufRead) -> shared::Result<usize> {
         .into_iter()
         .filter(|(_n, aunt)| {
             let mut mismatch = false;
-            let cmps: &[(&str, &dyn Fn(&usize, &usize) -> bool)] = &[
-                ("children", &|a, b| a == b),
-                ("cats", &|a, b| a > b),
-                ("samoyeds", &|a, b| a == b),
-                ("pomeranians", &|a, b| a < b),
-                ("akitas", &|a, b| a == b),
-                ("vizslas", &|a, b| a == b),
-                ("goldfish", &|a, b| a < b),
-                ("trees", &|a, b| a > b),
-                ("cars", &|a, b| a == b),
-                ("perfumes", &|a, b| a == b),
+            let cmps: &[(&str, Ordering)] = &[
+                ("children", Ordering::Equal),
+                ("cats", Ordering::Greater),
+                ("samoyeds", Ordering::Equal),
+                ("pomeranians", Ordering::Less),
+                ("akitas", Ordering::Equal),
+                ("vizslas", Ordering::Equal),
+                ("goldfish", Ordering::Less),
+                ("trees", Ordering::Greater),
+                ("cars", Ordering::Equal),
+                ("perfumes", Ordering::Equal),
             ];
-            for (key, cmp) in cmps {
+            for (key, ordering) in cmps {
                 if let (Some(a), Some(b)) = (aunt.0.get(*key), target_info.0.get(*key)) {
-                    if !cmp(a, b) {
+                    if a.cmp(b) != *ordering {
                         mismatch = true
                     }
                 }
